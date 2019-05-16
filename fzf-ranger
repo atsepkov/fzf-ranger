@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+display_usage() { 
+	echo -e "\nUsage: $0 [arguments] \n" 
+} 
+
+show_directory() {
+    local location flags
+    location=$1
+    flags=$2
+
+    bash open.sh $location "$(CLICOLOR_FORCE=1 ls -${flags}pG $location | fzf --reverse --ansi --preview="bash preview.sh $location {}")"
+}
+
+
+while getopts ":h" opt; do
+    case $opt in
+        h)
+            display_usage
+            exit 0
+            ;;
+        a)
+            SHOW_ALL_FILES=1
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ $SHOW_ALL_FILES ]; then
+    show_directory $1 a
+else
+    show_directory $1
+fi
